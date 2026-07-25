@@ -5,7 +5,6 @@ __pycache__/
 venv/
 
 # Model artifacts (large binary files -- see README for how to obtain/train)
-models/*.h5
 models/*.tf
 models/retrain_logs/
 
@@ -20,9 +19,6 @@ data/preprocessed/*/*.jpeg
 data/preprocessed/*/*.png
 data/uploads.db
 !data/**/.gitkeep
-
-# Jupyter
-.ipynb_checkpoints/
 
 # Locust results
 results/
