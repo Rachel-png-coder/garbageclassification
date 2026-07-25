@@ -19,7 +19,10 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 
-API_URL = os.environ.get("API_URL", "http://localhost:8000")
+API_URL = os.environ.get(
+    "API_URL",
+    "https://garbageclassification.onrender.com"
+)
 
 st.set_page_config(page_title="Garbage Classifier", page_icon="🗑️", layout="wide")
 st.title("🗑️ Garbage Classification Dashboard")
