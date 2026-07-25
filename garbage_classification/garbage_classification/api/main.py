@@ -16,7 +16,7 @@ GET  /model-info             -> which model version is currently deployed
 Run locally:
     uvicorn api.main:app --reload --port 8000
 """
-
+import json
 import io
 import time
 import shutil
@@ -200,15 +200,43 @@ def home():
 
 @app.get("/insights")
 def insights():
-    """Basic dataset statistics for the UI's visualization tab -- counts per
-    class from both the original train set and newly uploaded data."""
+    """Dataset statistics for UI visualization."""
+
+    stats_file = Path("data/dataset_stats.json")
+
+    # If statistics file exists (production / Render)
+    if stats_file.exists():
+        with open(stats_file, "r") as f:
+            stats = json.load(f)
+
+        return {
+            "train_counts": stats.get("train_counts", {}),
+            "test_counts": stats.get("test_counts", {}),
+            "pending_upload_counts": {
+                cls: len([
+                    f for f in (UPLOADS_DIR / cls).glob("*")
+                    if f.suffix.lower() in IMAGE_EXTS
+                ])
+                for cls in CLASS_NAMES
+            },
+            "preprocessed_counts": {},
+            "pending_uploads_in_db": len(db.get_pending_uploads()),
+        }
+
+
+    # Local fallback (when folders exist)
     def count_images(base_dir):
         base = Path(base_dir)
+
         return {
-            cls: len([f for f in (base / cls).glob("*") if f.suffix.lower() in IMAGE_EXTS])
+            cls: len([
+                f for f in (base / cls).glob("*")
+                if f.suffix.lower() in IMAGE_EXTS
+            ])
             for cls in CLASS_NAMES
             if (base / cls).exists()
         }
+
 
     return {
         "train_counts": count_images(TRAIN_DIR),

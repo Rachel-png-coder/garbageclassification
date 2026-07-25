@@ -1,0 +1,18 @@
+{
+    "train_counts": {
+        "cardboard": 1883,
+        "glass": 2125,
+        "metal": 1772,
+        "paper": 1968,
+        "plastic": 1945,
+        "trash": 2125
+    },
+    "test_counts": {
+        "cardboard": 332,
+        "glass": 375,
+        "metal": 312,
+        "paper": 347,
+        "plastic": 343,
+        "trash": 375
+    }
+}
