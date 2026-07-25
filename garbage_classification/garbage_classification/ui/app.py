@@ -33,6 +33,8 @@ tab_predict, tab_insights, tab_retrain, tab_status = st.tabs(
     ["🔍 Predict", "📊 Data Insights", "🔁 Upload & Retrain", "⏱️ Model Status"]
 )
 
+st.write("API URL:", API_URL)
+
 # --------------------------------------------------------------------------- #
 # TAB 1 -- Predict a single image
 # --------------------------------------------------------------------------- #
