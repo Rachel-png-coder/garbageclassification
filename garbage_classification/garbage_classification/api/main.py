@@ -37,7 +37,7 @@ from src.retrain import full_retrain_pipeline
 from src import database as db
 
 APP_START_TIME = time.time()
-MODEL_PATH = Path("models/garbage_model.h5")
+MODEL_PATH = Path("models/garbage_model.keras")
 UPLOADS_DIR = Path("data/uploads")
 PREPROCESSED_DIR = Path("data/preprocessed")
 TRAIN_DIR = Path("data/train")
