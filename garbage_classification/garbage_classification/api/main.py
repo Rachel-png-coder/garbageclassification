@@ -190,6 +190,13 @@ def trigger_retrain(background_tasks: BackgroundTasks):
 def retrain_status():
     return RETRAIN_STATUS
 
+@app.get("/")
+def home():
+    return {
+        "status": "running",
+        "service": "Garbage Classification API"
+    }
+
 
 @app.get("/insights")
 def insights():
