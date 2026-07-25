@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Model artifacts (large binary files -- see README for how to obtain/train)
+models/*.h5
+models/*.tf
+models/retrain_logs/
+
+# Full dataset (only a small sample is kept in git; download full data from Kaggle)
+data/train/*/*.jpg
+data/test/*/*.jpg
+data/uploads/*/*.jpg
+data/uploads/*/*.jpeg
+data/uploads/*/*.png
+data/preprocessed/*/*.jpg
+data/preprocessed/*/*.jpeg
+data/preprocessed/*/*.png
+data/uploads.db
+!data/**/.gitkeep
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Locust results
+results/
+*.csv
+
+# OS
+.DS_Store

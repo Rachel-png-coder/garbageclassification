@@ -1,0 +1,51 @@
+version: "3.9"
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    expose:
+      - "8000"          # NOT published directly -- reached only via the nginx LB below,
+                         # which is what makes `--scale api=N` safe (no host port clashes)
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 1G
+
+  lb:
+    image: nginx:alpine
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "8000:80"       # Locust and the UI both hit http://localhost:8000
+    depends_on:
+      - api
+
+  ui:
+    build:
+      context: .
+      dockerfile: ui/Dockerfile
+    ports:
+      - "8501:8501"
+    environment:
+      - API_URL=http://lb:80
+    depends_on:
+      - lb
+
+# --------------------------------------------------------------------------- #
+# Load-testing usage (see locustfile.py):
+#
+#   docker compose up --build --scale api=1   # baseline, 1 container
+#   locust -f locustfile.py --host http://localhost:8000
+#
+#   docker compose up --build --scale api=3   # scale out to 3 containers
+#   locust -f locustfile.py --host http://localhost:8000
+#
+# Record RPS / latency shown in the Locust web UI (http://localhost:8089)
+# for each container count and paste the comparison table into README.md.
+# --------------------------------------------------------------------------- #
