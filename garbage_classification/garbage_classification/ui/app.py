@@ -24,6 +24,8 @@ API_URL = os.environ.get(
     "https://garbageclassification.onrender.com"
 )
 
+st.write("API URL:", API_URL)
+
 st.set_page_config(page_title="Garbage Classifier", page_icon="🗑️", layout="wide")
 st.title("🗑️ Garbage Classification Dashboard")
 
