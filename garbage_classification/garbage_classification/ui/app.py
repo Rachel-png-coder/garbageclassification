@@ -45,24 +45,44 @@ with tab_predict:
         with col1:
             st.image(uploaded_file, caption="Uploaded image")
 
-        if st.button("Predict", type="primary"):
-            with st.spinner("Running inference..."):
-                try:
-                    files = {"file": (uploaded_file.name, uploaded_file.getvalue())}
-                    resp = requests.post(f"{API_URL}/predict", files=files, timeout=30)
-                    resp.raise_for_status()
-                    result = resp.json()
+    if st.button("Predict", type="primary"):
+     with st.spinner("Running inference..."):
+        try:
+            files = {
+                "file": (
+                    uploaded_file.name,
+                    uploaded_file.getvalue(),
+                    uploaded_file.type
+                )
+            }
 
-                    with col2:
-                        st.success(f"Prediction: **{result['predicted_class'].upper()}**")
-                        st.metric("Confidence", f"{result['confidence']*100:.1f}%")
-                        probs_df = pd.DataFrame(
-                            result["probabilities"].items(), columns=["class", "probability"]
-                        ).sort_values("probability", ascending=False)
-                        st.bar_chart(probs_df.set_index("class"))
-                except requests.exceptions.RequestException as e:
-                    st.error(f"API error: {e}")
+            resp = requests.post(
+                f"{API_URL}/predict",
+                files=files,
+                timeout=120
+            )
 
+            st.write("Status Code:", resp.status_code)
+            st.write("Response:")
+            st.code(resp.text)
+
+            resp.raise_for_status()
+
+            result = resp.json()
+
+            with col2:
+                st.success(f"Prediction: **{result['predicted_class'].upper()}**")
+                st.metric("Confidence", f"{result['confidence'] * 100:.1f}%")
+
+                probs_df = pd.DataFrame(
+                    result["probabilities"].items(),
+                    columns=["class", "probability"]
+                ).sort_values("probability", ascending=False)
+
+                st.bar_chart(probs_df.set_index("class"))
+
+        except Exception as e:
+            st.exception(e)
 # --------------------------------------------------------------------------- #
 # TAB 2 -- Data insights / visualizations
 # --------------------------------------------------------------------------- #
