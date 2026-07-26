@@ -19,10 +19,7 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 
-API_URL = os.environ.get(
-    "API_URL",
-    "https://garbageclassification.onrender.com"
-)
+API_URL = os.environ.get("API_URL", "http://localhost:8000")
 
 st.set_page_config(page_title="Garbage Classifier", page_icon="🗑️", layout="wide")
 st.title("🗑️ Garbage Classification Dashboard")
@@ -30,8 +27,6 @@ st.title("🗑️ Garbage Classification Dashboard")
 tab_predict, tab_insights, tab_retrain, tab_status = st.tabs(
     ["🔍 Predict", "📊 Data Insights", "🔁 Upload & Retrain", "⏱️ Model Status"]
 )
-
-st.write("API URL:", API_URL)
 
 # --------------------------------------------------------------------------- #
 # TAB 1 -- Predict a single image
@@ -45,44 +40,24 @@ with tab_predict:
         with col1:
             st.image(uploaded_file, caption="Uploaded image")
 
-    if st.button("Predict", type="primary"):
-     with st.spinner("Running inference..."):
-        try:
-            files = {
-                "file": (
-                    uploaded_file.name,
-                    uploaded_file.getvalue(),
-                    uploaded_file.type
-                )
-            }
+        if st.button("Predict", type="primary"):
+            with st.spinner("Running inference..."):
+                try:
+                    files = {"file": (uploaded_file.name, uploaded_file.getvalue())}
+                    resp = requests.post(f"{API_URL}/predict", files=files, timeout=30)
+                    resp.raise_for_status()
+                    result = resp.json()
 
-            resp = requests.post(
-                f"{API_URL}/predict",
-                files=files,
-                timeout=120
-            )
+                    with col2:
+                        st.success(f"Prediction: **{result['predicted_class'].upper()}**")
+                        st.metric("Confidence", f"{result['confidence']*100:.1f}%")
+                        probs_df = pd.DataFrame(
+                            result["probabilities"].items(), columns=["class", "probability"]
+                        ).sort_values("probability", ascending=False)
+                        st.bar_chart(probs_df.set_index("class"))
+                except requests.exceptions.RequestException as e:
+                    st.error(f"API error: {e}")
 
-            st.write("Status Code:", resp.status_code)
-            st.write("Response:")
-            st.code(resp.text)
-
-            resp.raise_for_status()
-
-            result = resp.json()
-
-            with col2:
-                st.success(f"Prediction: **{result['predicted_class'].upper()}**")
-                st.metric("Confidence", f"{result['confidence'] * 100:.1f}%")
-
-                probs_df = pd.DataFrame(
-                    result["probabilities"].items(),
-                    columns=["class", "probability"]
-                ).sort_values("probability", ascending=False)
-
-                st.bar_chart(probs_df.set_index("class"))
-
-        except Exception as e:
-            st.exception(e)
 # --------------------------------------------------------------------------- #
 # TAB 2 -- Data insights / visualizations
 # --------------------------------------------------------------------------- #
