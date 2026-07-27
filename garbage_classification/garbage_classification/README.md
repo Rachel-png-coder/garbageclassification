@@ -79,7 +79,7 @@ garbage-classification/
 │   └── uploads.db             # SQLite log of every upload (see src/database.py)
 │
 └── models/
-    └── garbage_model.keras      # trained model artifact (produced by the notebook)
+    └── garbage_model.h5      # trained model artifact (produced by the notebook)
 ```
 
 > Note: the full dataset (~150MB) is **not** committed to this repo (large
