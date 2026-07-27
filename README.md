@@ -7,9 +7,9 @@ An end-to-end machine learning system that classifies images of waste into
 data acquisition, preprocessing, model training/evaluation, deployment as an
 API + web dashboard, bulk data upload, on-demand retraining, and load testing.
 
-**Video Demo:** `<PASTE YOUR YOUTUBE LINK HERE>`
-**Live API URL:** `<PASTE YOUR DEPLOYED API URL HERE, e.g. Render>`
-**Live UI URL:** `<PASTE YOUR DEPLOYED STREAMLIT URL HERE>`
+**Video Demo:** <https://youtu.be/Kzq6TOSBbjk?si=HHa49Hs4kN0XzAfn>
+**Live API URL:** https://garbageclassification.onrender.com (interactive docs: [/docs](https://garbageclassification.onrender.com/docs))
+**Live UI URL:** https://garbageclassification-1.onrender.com/
 
 ---
 
@@ -60,12 +60,15 @@ garbage-classification/
 │   ├── prediction.py          # single-image inference (used by the API)
 │   └── retrain.py             # preprocess uploads -> merge into train/ -> retrain the model
 │
+├── requirements.txt            # full dev environment (notebook + both services + locust)
 ├── api/
 │   ├── main.py                # FastAPI app (predict / upload / retrain / health / insights)
+│   ├── requirements.txt       # minimal deps for the API image (includes TensorFlow)
 │   └── Dockerfile
 │
 ├── ui/
 │   ├── app.py                 # Streamlit dashboard
+│   ├── requirements.txt       # minimal deps for the UI image (NO TensorFlow -- UI never touches the model directly)
 │   └── Dockerfile
 │
 ├── data/
@@ -76,7 +79,7 @@ garbage-classification/
 │   └── uploads.db             # SQLite log of every upload (see src/database.py)
 │
 └── models/
-    └── garbage_model.h5       # trained model artifact (produced by the notebook)
+    └── garbage_model.keras      # trained model artifact (produced by the notebook)
 ```
 
 > Note: the full dataset (~150MB) is **not** committed to this repo (large
@@ -221,17 +224,22 @@ latency under Z ms at the same load.")*
 
 ## 6. Model Evaluation Summary
 
-*(Paste the final metrics table from the notebook's Section 5 here once you've
-run it, e.g.:)*
+Results from `notebook/garbage_classification.ipynb`, evaluated on the held-out test set (2,084 images):
 
 | Metric | Value |
 |---|---|
-| Test Accuracy | |
-| Test Precision (weighted) | |
-| Test Recall (weighted) | |
-| Test F1-score (weighted) | |
-| Test Loss | |
-| Test AUC | |
+| Test Accuracy | 88.44% |
+| Test Precision (weighted) | 0.885 |
+| Test Recall (weighted) | 0.884 |
+| Test F1-score (weighted) | 0.884 |
+| Test Loss | 0.391 |
+| Test AUC | 0.988 |
+
+Per-class F1: cardboard 0.86, glass 0.90, metal 0.87, paper 0.87, plastic 0.87, trash 0.92.
+`trash` is the strongest class (highest recall, 0.96); `paper` has the lowest
+recall (0.84), meaning it's the class most often misclassified as something
+else -- see the notebook's confusion matrix heatmap for exactly which classes
+it's confused with.
 
 ---
 
