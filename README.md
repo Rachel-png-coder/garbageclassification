@@ -204,22 +204,6 @@ locust -f locustfile.py --host http://localhost:8000 --headless -u 50 -r 5 -t 2m
 
 Or use the interactive web UI: `locust -f locustfile.py --host http://localhost:8000`
 then open `http://localhost:8089`.
-
-### Results
-
-*(Fill this in after running the tests above on your machine -- paste the
-Requests/s and Average/P95 Response Time columns from each `*_stats.csv`.)*
-
-| # API Containers | Requests/s | Avg Latency (ms) | P95 Latency (ms) | Failures |
-|---|---|---|---|---|
-| 1 | | | | |
-| 2 | | | | |
-| 3 | | | | |
-
-**Observations:** *(e.g. "Latency stayed flat up to N concurrent users with
-1 container, then degraded past that; adding containers X and Y kept P95
-latency under Z ms at the same load.")*
-
 ---
 
 ## 6. Model Evaluation Summary
@@ -260,12 +244,8 @@ The retraining trigger demonstrates three explicit steps end-to-end:
 3. **Retraining from the custom pretrained model** -- the cleaned images
    are merged into `data/train/<class>/`, and `retrain_model()`
    (`src/retrain.py`) **warm-starts from the already-trained
-   `garbage_model.h5`** (not raw ImageNet) and fine-tunes it at a low
+   `garbage_model.keras`** (not raw ImageNet) and fine-tunes it at a low
    learning rate. The DB rows used are stamped with the retrain run's
    timestamp (`used_in_retrain_run`) so every model version has a
    traceable audit trail of exactly which uploads fed it.
 
-The new model overwrites `models/garbage_model.h5` and the prediction
-cache is cleared so the API immediately serves the new weights. A
-timestamped copy of every retrained model is kept in
-`models/retrain_logs/` for rollback/audit.
